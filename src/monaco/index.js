@@ -19,15 +19,16 @@ export function createMonacoEditor({
   let shouldTriggerOnChange = true
 
   window.MonacoEnvironment.getWorkerUrl = (_moduleId, label) => {
+    console.log(label)
     const v = `?v=${
       require('monaco-editor/package.json?fields=version').version
     }`
     if (label === 'css' || label === 'tailwindcss')
       return `_next/static/chunks/css.worker.js${v}`
-    if (label === 'html') return `_next/static/chunks/html.worker.js${v}`
+    if (label === 'html') return `_next/static/chunks/html.js${v}`
     if (label === 'typescript' || label === 'javascript')
       return `_next/static/chunks/ts.worker.js${v}`
-    return `_next/static/chunks/editor.worker.js${v}`
+    return `_next/static/chunks/editorWorkerService.js${v}`
   }
 
   disposables.push(registerDocumentFormattingEditProviders())
@@ -82,7 +83,7 @@ export function createMonacoEditor({
   })
   disposables.push(editor)
 
-  setupKeybindings(editor)
+  // setupKeybindings(editor)
 
   function triggerOnChange(id, newContent) {
     if (onChangeCallback && shouldTriggerOnChange) {

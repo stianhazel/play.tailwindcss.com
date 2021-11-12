@@ -360,7 +360,7 @@ class AddWorkerEntryPointPlugin {
   }
 
   apply(compiler) {
-    const webpack = compiler.webpack ?? require('webpack')
+    const webpack = compiler.webpack
     const compilerHook = getCompilerHook(compiler, this.options)
     const majorVersion = webpack.version.split('.')[0]
     if (parseInt(majorVersion) < 4) {

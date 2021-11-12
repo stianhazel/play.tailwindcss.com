@@ -1,4 +1,4 @@
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import * as monaco from 'monaco-editor'
 import { setupMode } from 'monaco-editor/esm/vs/language/css/cssMode'
 import {
   DiagnosticsAdapter,

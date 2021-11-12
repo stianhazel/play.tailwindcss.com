@@ -1,4 +1,4 @@
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import * as monaco from 'monaco-editor'
 import { SuggestAdapter } from 'monaco-editor/esm/vs/language/typescript/languageFeatures'
 import types1 from '!!raw-loader!../monaco/types.d.ts'
 import types2 from '!!raw-loader!../monaco/types-v2.d.ts'
@@ -149,7 +149,7 @@ export function setupJavaScriptMode(
 
         const _provideCompletionItems =
           SuggestAdapter.prototype.provideCompletionItems
-        SuggestAdapter.prototype.provideCompletionItems = async function (
+        SuggestAdapter.prototype.provideCompletionItems = function (
           originalModel,
           position,
           ...rest
@@ -159,27 +159,28 @@ export function setupJavaScriptMode(
           }
           const lineDelta =
             originalModel === model ? getLineDelta(model, position) : 0
-          const result = await this._provideCompletionItems(
+          return this._provideCompletionItems(
             originalModel === model ? proxyModel : originalModel,
             originalModel === model ? position.delta(lineDelta) : position,
             ...rest
-          )
-          if (!result) return result
-          return {
-            suggestions:
-              originalModel === model
-                ? result.suggestions.map((suggestion) => ({
-                    ...suggestion,
-                    uri: model.uri,
-                    range: new monaco.Range(
-                      suggestion.range.startLineNumber - lineDelta,
-                      suggestion.range.startColumn,
-                      suggestion.range.endLineNumber - lineDelta,
-                      suggestion.range.endColumn
-                    ),
-                  }))
-                : result.suggestions,
-          }
+          ).then((result) => {
+            if (!result) return result
+            return {
+              suggestions:
+                originalModel === model
+                  ? result.suggestions.map((suggestion) => ({
+                      ...suggestion,
+                      uri: model.uri,
+                      range: new monaco.Range(
+                        suggestion.range.startLineNumber - lineDelta,
+                        suggestion.range.startColumn,
+                        suggestion.range.endLineNumber - lineDelta,
+                        suggestion.range.endColumn
+                      ),
+                    }))
+                  : result.suggestions,
+            }
+          })
         }
         disposables.push({
           dispose() {

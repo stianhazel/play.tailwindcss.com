@@ -1,4 +1,4 @@
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import * as monaco from 'monaco-editor'
 import { emmetHTML } from 'emmet-monaco-es'
 import parseAbbreviation from '@emmetio/abbreviation'
 import format from '@emmetio/markup-formatters'

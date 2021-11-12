@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react'
 import { createMonacoEditor } from '../monaco'
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
+import * as monaco from 'monaco-editor'
 import { onDidChangeTheme } from '../utils/theme'
 
 export default function Editor({

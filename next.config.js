@@ -1,15 +1,6 @@
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 const { createLoader } = require('simple-functional-loader')
 const path = require('path')
 const fs = require('fs')
-const AddWorkerEntryPointPlugin = require('./plugin')
-const { featuresArr } = require('monaco-editor-webpack-plugin/out/features')
-
-const featuresById = {}
-featuresArr.forEach((feature) => (featuresById[feature.label] = feature))
-let featureIds = Object.keys(featuresById)
-
-// console.log(featuresArr)
 
 const externals = {
   'fs-extra': 'self.fsextra',
@@ -92,24 +83,6 @@ function createReadFileReplaceLoader(tailwindVersion) {
   })
 }
 
-class RenameOutputPlugin {
-  constructor(map) {
-    this.map = map
-  }
-  apply(compiler) {
-    compiler.hooks.thisCompilation.tap('RenameOutputPlugin', (compilation) => {
-      compilation.hooks.optimizeChunks.tap('RenameOutputPlugin', (chunks) => {
-        chunks.forEach((chunk) => {
-          console.log(chunk.filenameTemplate)
-          if (this.map[chunk.name]) {
-            chunk.filenameTemplate = this.map[chunk.name]
-          }
-        })
-      })
-    })
-  }
-}
-
 module.exports = {
   async headers() {
     return [
@@ -148,14 +121,6 @@ module.exports = {
           }
         })
       })
-
-    // config.plugins.push(
-    //   new MonacoWebpackPlugin({
-    //     languages: ['css', 'typescript', 'javascript', 'html'],
-    //     // filename: 'static/chunks/[name].[contenthash].worker.js',
-    //     globalAPI: true,
-    //   })
-    // )
 
     if (!isServer) {
       if (config.externals) {
@@ -274,17 +239,6 @@ module.exports = {
       ],
     })
 
-    // config.module.rules.push({
-    //   test: /monaco-editor\/esm\/vs\/editor\/editor\.worker\.js$/,
-    //   use: [
-    //     {
-    //       loader: 'file-loader',
-    //       options: { name: 'static/chunks/[name].js' },
-    //     },
-    //     defaultLoaders.babel,
-    //   ],
-    // })
-
     config.module.rules.push({
       test: require.resolve('autoprefixer/data/prefixes.js'),
       use: [
@@ -305,59 +259,39 @@ module.exports = {
       ],
     })
 
-    // config.module.rules.push({
-    //   test: /\.worker\.js$/,
-    //   loader: 'worker-loader',
-    //   // options: {
-    //   //   publicPath: '/_next/',
-    //   //   filename: 'static/chunks/[name].[contenthash].worker.js',
-    //   //   chunkFilename: 'static/chunks/[id].[contenthash].worker.js',
-    //   // },
-    // })
-
     config.output.globalObject = 'self'
 
-    // let chunk = config.output.chunkFilename
-    // console.log({ chunk })
-    // config.output.chunkFilename = ({ chunk }) => {
-    //   if (chunk.id.includes('monaco-editor_esm_vs_language')) {
-    //     return '[name].worker.js'
-    //   }
-    //   return chunk
-    // }
-    // config.output.chunkFilename.replace = (...args) => chunk.replace(...args)
+    if (!dev && isServer) {
+      let originalEntry = config.entry
 
-    // if (!dev && isServer) {
-    let originalEntry = config.entry
-
-    config.entry = async () => {
-      const entries = { ...(await originalEntry()) }
-      // console.log(entries)
-      // delete entries['main.js']
-      // entries['scripts/buildBuiltinPlugins'] =
-      //   './src/scripts/buildBuiltinPlugins.js'
-      return {
-        ...entries,
-        // 'editor.worker': 'monaco-editor/esm/vs/editor/editor.worker.js',
-        // 'css.worker': 'monaco-editor/esm/vs/language/css/css.worker',
-        // 'ts.worker': 'monaco-editor/esm/vs/language/typescript/ts.worker',
-        // 'html.worker': 'monaco-editor/esm/vs/language/html/html.worker',
+      config.entry = async () => {
+        const entries = { ...(await originalEntry()) }
+        entries['scripts/buildBuiltinPlugins'] =
+          './src/scripts/buildBuiltinPlugins.js'
+        return entries
       }
     }
-    // }
-
-    console.log(config.output)
 
     let workers = [
       {
-        label: 'editorWorkerService',
+        label: 'editor.worker',
         id: 'vs/editor/editor',
         entry: 'vs/editor/editor.worker',
       },
       {
-        label: 'html',
+        label: 'html.worker',
         id: 'vs/language/html/htmlWorker',
         entry: 'vs/language/html/html.worker',
+      },
+      {
+        label: 'css.worker',
+        id: 'vs/language/css/cssWorker',
+        entry: 'vs/language/css/css.worker',
+      },
+      {
+        label: 'ts.worker',
+        id: 'vs/language/typescript/tsWorker',
+        entry: 'vs/language/typescript/ts.worker',
       },
     ]
 
@@ -366,6 +300,7 @@ module.exports = {
         ({ label, id, entry }) =>
           new AddWorkerEntryPointPlugin({
             id,
+            label,
             entry: require.resolve(path.join('monaco-editor/esm', entry)),
             filename: isServer ? `${label}.js` : `static/chunks/${label}.js`,
             chunkFilename: isServer
@@ -378,59 +313,60 @@ module.exports = {
       )
     )
 
-    if (!isServer) {
-      config.plugins
-        .push
-        // new RenameOutputPlugin({
-        //   'editor.worker': 'static/chunks/[name].js',
-        //   'ts.worker': 'static/chunks/[name].js',
-        //   'html.worker': 'static/chunks/[name].js',
-        //   'css.worker': 'static/chunks/[name].js',
-        // })
-        ()
-    }
-
-    config.module.rules.push({
-      test: /monaco-editor[/\\]esm[/\\]vs[/\\]editor[/\\]editor.(api|main).js/,
-      use: [
-        defaultLoaders.babel,
-        {
-          loader: path.resolve(__dirname, 'include.js'),
-          options: {
-            globals: {
-              MonacoEnvironment: `(function () {
-                return {
-                  globalAPI: true,
-                  getWorkerUrl() {
-                    console.log("yo")
-                  }
-                };
-              })()`,
-            },
-            pre: featuresArr
-              .map((x) => x.entry)
-              .flat()
-              .map((x) => require.resolve(path.join('monaco-editor/esm', x))),
-            post: [
-              // html
-              'vs/basic-languages/html/html.contribution',
-              'vs/language/html/monaco.contribution',
-              // css
-              'vs/basic-languages/css/css.contribution',
-              'vs/language/css/monaco.contribution',
-              // js
-              'vs/basic-languages/javascript/javascript.contribution',
-              // ts
-              'vs/basic-languages/typescript/typescript.contribution',
-              'vs/language/typescript/monaco.contribution',
-            ].map((x) => require.resolve(path.join('monaco-editor/esm', x))),
-          },
-        },
-      ],
-    })
-
-    // console.log(isServer, config.output)
-
     return config
   },
+}
+
+/**
+ * AddWorkerEntryPointPlugin
+ * https://github.com/microsoft/monaco-editor/blob/57e51563851acfda93b532aa7812159943527c7b/monaco-editor-webpack-plugin/src/plugins/AddWorkerEntryPointPlugin.ts
+ */
+function getCompilerHook(
+  compiler,
+  { id, label, entry, filename, chunkFilename, plugins }
+) {
+  const webpack = compiler.webpack ?? require('webpack')
+
+  return function (compilation, callback) {
+    const outputOptions = {
+      filename,
+      chunkFilename,
+      publicPath: compilation.outputOptions.publicPath,
+      // HACK: globalObject is necessary to fix https://github.com/webpack/webpack/issues/6642
+      globalObject: 'this',
+    }
+    const childCompiler = compilation.createChildCompiler(id, outputOptions, [
+      new webpack.webworker.WebWorkerTemplatePlugin(),
+      new webpack.LoaderTargetPlugin('webworker'),
+    ])
+    const SingleEntryPlugin = webpack.EntryPlugin ?? webpack.SingleEntryPlugin
+    new SingleEntryPlugin(compiler.context, entry, label).apply(childCompiler)
+    plugins.forEach((plugin) => plugin.apply(childCompiler))
+
+    childCompiler.runAsChild((err) => callback(err))
+  }
+}
+
+class AddWorkerEntryPointPlugin {
+  constructor({
+    id,
+    label,
+    entry,
+    filename,
+    chunkFilename = undefined,
+    plugins,
+  }) {
+    this.options = { id, label, entry, filename, chunkFilename, plugins }
+  }
+
+  apply(compiler) {
+    const webpack = compiler.webpack ?? require('webpack')
+    const compilerHook = getCompilerHook(compiler, this.options)
+    const majorVersion = webpack.version.split('.')[0]
+    if (parseInt(majorVersion) < 4) {
+      compiler.plugin('make', compilerHook)
+    } else {
+      compiler.hooks.make.tapAsync('AddWorkerEntryPointPlugin', compilerHook)
+    }
+  }
 }

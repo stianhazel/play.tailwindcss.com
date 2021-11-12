@@ -84,7 +84,7 @@ export function createMonacoEditor({
   })
   disposables.push(editor)
 
-  // setupKeybindings(editor)
+  setupKeybindings(editor)
 
   function triggerOnChange(id, newContent) {
     if (onChangeCallback && shouldTriggerOnChange) {

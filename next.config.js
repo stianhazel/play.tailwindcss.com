@@ -97,7 +97,7 @@ module.exports = {
       },
     ]
   },
-  webpack: (config, { isServer, webpack, dev, defaultLoaders }) => {
+  webpack: (config, { isServer, webpack, dev }) => {
     config.resolve.alias = { ...config.resolve.alias, ...moduleOverrides }
 
     config.module.rules

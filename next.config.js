@@ -325,7 +325,7 @@ function getCompilerHook(
   compiler,
   { id, label, entry, filename, chunkFilename, plugins }
 ) {
-  const webpack = compiler.webpack ?? require('webpack')
+  const webpack = compiler.webpack
 
   return function (compilation, callback) {
     const outputOptions = {
@@ -339,7 +339,7 @@ function getCompilerHook(
       new webpack.webworker.WebWorkerTemplatePlugin(),
       new webpack.LoaderTargetPlugin('webworker'),
     ])
-    const SingleEntryPlugin = webpack.EntryPlugin ?? webpack.SingleEntryPlugin
+    const SingleEntryPlugin = webpack.EntryPlugin
     new SingleEntryPlugin(compiler.context, entry, label).apply(childCompiler)
     plugins.forEach((plugin) => plugin.apply(childCompiler))
 

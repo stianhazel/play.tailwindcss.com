@@ -117,7 +117,6 @@ module.exports = {
               /[\\/]node_modules[\\/]monaco-editor[\\/]/,
             ]
             delete r.issuer.and
-            delete r.issuer.not
           }
         })
       })

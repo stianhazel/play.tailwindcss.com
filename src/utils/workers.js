@@ -7,7 +7,7 @@ export function createWorkerQueue(Worker) {
     worker,
     emit(data) {
       queue.clear()
-      const _id = performance.now()
+      const _id = Math.random().toString(36).substr(2, 5)
       worker.postMessage({ _current: _id })
       return queue.add(
         () =>
@@ -30,7 +30,7 @@ export function createWorkerQueue(Worker) {
 
 export function requestResponse(worker, data) {
   return new Promise((resolve) => {
-    const _id = performance.now()
+    const _id = Math.random().toString(36).substr(2, 5)
     function onMessage(event) {
       if (event.data._id !== _id) return
       worker.removeEventListener('message', onMessage)

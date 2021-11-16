@@ -62,18 +62,36 @@ export function getVariants(state) {
         let definitions = []
 
         for (let fn of fns) {
+          let definition
           let container = root.clone()
-          fn({
+          let returnValue = fn({
             container,
             separator: state.separator,
             modifySelectors,
+            format: (def) => {
+              definition = def.replace(/:merge\(([^)]+)\)/g, '$1')
+            },
+            wrap: (rule) => {
+              if (rule.type === 'atrule') {
+                definition = `@${rule.name} ${rule.params}`
+              }
+            },
           })
+
+          if (!definition) {
+            definition = returnValue
+          }
+
+          if (definition) {
+            definitions.push(definition)
+            continue
+          }
 
           container.walkDecls((decl) => {
             decl.remove()
           })
 
-          let definition = removeBrackets(
+          definition = removeBrackets(
             container
               .toString()
               .replace(`.${escape(`${variantName}:${placeholder}`)}`, '&')

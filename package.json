@@ -13,7 +13,7 @@
     "@tailwindcss/forms": "0.3.2",
     "@tailwindcss/forms-next": "npm:@tailwindcss/forms@0.4.0-alpha.1",
     "@tailwindcss/typography": "0.4.0",
-    "@tailwindcss/typography-next": "npm:@tailwindcss/typography@0.5.0-alpha.1",
+    "@tailwindcss/typography-next": "npm:@tailwindcss/typography@0.5.0-alpha.2",
     "@tailwindcss/ui": "0.7.2",
     "@typescript-eslint/eslint-plugin": "2.x",
     "@typescript-eslint/parser": "2.x",
@@ -55,9 +55,9 @@
     "simple-functional-loader": "^1.2.1",
     "string-replace-loader": "^2.3.0",
     "tailwindcss": "2.2.15",
-    "tailwindcss-language-service": "0.0.21",
+    "tailwindcss-language-service": "0.0.22",
     "tailwindcss-v1": "npm:tailwindcss@1.9.6",
-    "tailwindcss-v3": "npm:tailwindcss@3.0.0-alpha.1",
+    "tailwindcss-v3": "npm:tailwindcss@3.0.0-alpha.2",
     "vscode-languageserver-textdocument": "^1.0.1",
     "worker-loader": "^3.0.8"
   }

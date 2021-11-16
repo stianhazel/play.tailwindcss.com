@@ -229,6 +229,7 @@ addEventListener('message', async (event) => {
         },
         tailwindCSS: {
           validate: true,
+          classAttributes: ['class'],
           lint: {
             cssConflict: 'warning',
             invalidApply: 'error',

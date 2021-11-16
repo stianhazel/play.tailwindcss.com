@@ -309,7 +309,7 @@ function asCommand(command) {
 
 export function asDiagnostics(diagnostics) {
   if (!diagnostics) {
-    return undefined
+    return []
   }
   return diagnostics.map((diagnostic) => asDiagnostic(diagnostic))
 }

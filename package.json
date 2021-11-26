@@ -54,7 +54,7 @@
     "react-use": "^15.3.4",
     "simple-functional-loader": "^1.2.1",
     "string-replace-loader": "^2.3.0",
-    "tailwindcss": "2.2.15",
+    "tailwindcss": "2.2.19",
     "tailwindcss-language-service": "0.0.22",
     "tailwindcss-v1": "npm:tailwindcss@1.9.6",
     "tailwindcss-v3": "npm:tailwindcss@3.0.0-alpha.2",

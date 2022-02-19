@@ -1,10 +1,11 @@
+import { useState } from 'react'
 import { Logo } from './Logo'
 import clsx from 'clsx'
 import { toggleTheme } from '../utils/theme'
 import tailwind1 from 'tailwindcss-v1/package.json?fields=version'
 import tailwind2 from 'tailwindcss-v2/package.json?fields=version'
 import tailwind3 from 'tailwindcss/package.json?fields=version'
-import { Listbox } from '@headlessui/react'
+import { Listbox, Dialog } from '@headlessui/react'
 
 const versions = {
   1: tailwind1.version,
@@ -21,6 +22,8 @@ export function Header({
   onChangeTailwindVersion,
   children,
 }) {
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
     <header
       className="relative z-20 flex-none py-3 pl-5 pr-3 sm:pl-6 sm:pr-4 md:pr-3.5 lg:px-6 flex items-center space-x-4 antialiased"
@@ -30,7 +33,89 @@ export function Header({
         <Logo className="flex-none text-black dark:text-white" />
         {children}
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center sm:hidden">
+        <HeaderButton className="" onClick={() => setIsOpen(true)}>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+          />
+        </HeaderButton>
+        <Dialog
+          className="fixed z-50 inset-0"
+          open={isOpen}
+          onClose={setIsOpen}
+          as="div"
+        >
+          <Dialog.Overlay className="fixed inset-0 bg-black/20 backdrop-blur-sm dark:bg-slate-900/80" />
+          <div className="fixed top-4 right-4 bg-white rounded-lg shadow-lg p-4 text-base font-semibold text-slate-900 dark:bg-slate-800 dark:text-slate-400 dark:highlight-white/5">
+            <div className="flex items-center justify-end">
+              <button
+                type="button"
+                className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
+                onClick={() => setIsOpen(false)}
+              >
+                <span className="sr-only">Close navigation</span>
+                <svg
+                  viewBox="0 0 10 10"
+                  className="w-2.5 h-2.5 overflow-visible"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M0 0L10 10M10 0L0 10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="flex items-center mr-16">
+              <VersionSwitcher
+                value={tailwindVersion}
+                onChange={onChangeTailwindVersion}
+              />
+              <div className="mx-5 w-px h-6 bg-gray-200 dark:bg-gray-700" />
+              <HeaderButton
+                className="ring-1 ring-gray-900/5 shadow-sm hover:bg-gray-50 dark:ring-0 dark:bg-gray-800 dark:hover:bg-gray-700 dark:shadow-highlight/4"
+                naturalWidth={24}
+                naturalHeight={24}
+                width={36}
+                height={36}
+                label={
+                  <>
+                    <span className="dark:hidden">Switch to dark theme</span>
+                    <span className="hidden dark:inline">
+                      Switch to light theme
+                    </span>
+                  </>
+                }
+                onClick={toggleTheme}
+                iconClassName="stroke-sky-500 fill-sky-100 group-hover:stroke-sky-600 dark:stroke-gray-400 dark:fill-gray-400/20 dark:group-hover:stroke-gray-300"
+                ringClassName="focus-visible:ring-sky-500 dark:focus-visible:ring-2 dark:focus-visible:ring-gray-400"
+              >
+                <g className="dark:opacity-0">
+                  <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  <path
+                    d="M12 4v.01M17.66 6.345l-.007.007M20.005 12.005h-.01M17.66 17.665l-.007-.007M12 20.01V20M6.34 17.665l.007-.007M3.995 12.005h.01M6.34 6.344l.007.007"
+                    fill="none"
+                  />
+                </g>
+                <g className="opacity-0 dark:opacity-100">
+                  <path d="M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" />
+                  <path
+                    d="M12 3v1M18.66 5.345l-.828.828M21.005 12.005h-1M18.66 18.665l-.828-.828M12 21.01V20M5.34 18.666l.835-.836M2.995 12.005h1.01M5.34 5.344l.835.836"
+                    fill="none"
+                  />
+                </g>
+              </HeaderButton>
+            </div>
+          </div>
+        </Dialog>
+      </div>
+      <div className="hidden sm:flex items-center">
         <VersionSwitcher
           value={tailwindVersion}
           onChange={onChangeTailwindVersion}

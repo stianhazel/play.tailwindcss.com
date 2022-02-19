@@ -24,12 +24,6 @@ export function Header({
 }) {
   const [isOpen, setIsOpen] = useState(false)
 
-  useEffect(() => {
-    console.log('isOpen changed')
-  }, [isOpen])
-
-  console.log('rendering...', isOpen)
-
   return (
     <header
       className="relative z-20 flex-none py-3 pl-5 pr-3 sm:pl-6 sm:pr-4 md:pr-3.5 lg:px-6 flex items-center space-x-4 antialiased"

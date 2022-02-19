@@ -55,7 +55,7 @@ export function Header({
           as="div"
         >
           <Dialog.Overlay className="fixed inset-0 bg-black/20 backdrop-blur-sm dark:bg-slate-900/80" />
-          <div className="fixed top-4 right-4 bg-white rounded-lg shadow-lg p-4 text-base font-semibold text-slate-900 dark:bg-slate-800 dark:text-slate-400 dark:highlight-white/5">
+          <div className="fixed top-4 right-4 w-40 bg-white rounded-lg shadow-lg p-4 text-base font-semibold text-slate-900 dark:bg-slate-800 dark:text-slate-400 dark:highlight-white/5">
             <div className="flex items-center justify-end">
               <button
                 type="button"
@@ -78,7 +78,7 @@ export function Header({
                 </svg>
               </button>
             </div>
-            <div className="space-y-2 mr-10">
+            <div className="space-y-2 pr-8">
               <HeaderButton
                 className="ring-1 ring-gray-900/5 shadow-sm hover:bg-gray-50 dark:ring-0 dark:bg-gray-800 dark:hover:bg-gray-700 dark:shadow-highlight/4"
                 naturalWidth={24}

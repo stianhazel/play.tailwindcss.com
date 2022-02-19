@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Logo } from './Logo'
 import clsx from 'clsx'
 import { toggleTheme } from '../utils/theme'
@@ -24,6 +24,12 @@ export function Header({
 }) {
   const [isOpen, setIsOpen] = useState(false)
 
+  useEffect(() => {
+    console.log('isOpen changed')
+  }, [isOpen])
+
+  console.log('rendering...', isOpen)
+
   return (
     <header
       className="relative z-20 flex-none py-3 pl-5 pr-3 sm:pl-6 sm:pr-4 md:pr-3.5 lg:px-6 flex items-center space-x-4 antialiased"
@@ -43,7 +49,7 @@ export function Header({
           />
         </HeaderButton>
         <Dialog
-          className="fixed z-50 inset-0"
+          className="fixed z-50 inset-0 sm:hidden"
           open={isOpen}
           onClose={setIsOpen}
           as="div"
@@ -53,7 +59,7 @@ export function Header({
             <div className="flex items-center justify-end">
               <button
                 type="button"
-                className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
+                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-300"
                 onClick={() => setIsOpen(false)}
               >
                 <span className="sr-only">Close navigation</span>
@@ -72,12 +78,7 @@ export function Header({
                 </svg>
               </button>
             </div>
-            <div className="flex items-center mr-16">
-              <VersionSwitcher
-                value={tailwindVersion}
-                onChange={onChangeTailwindVersion}
-              />
-              <div className="mx-5 w-px h-6 bg-gray-200 dark:bg-gray-700" />
+            <div className="space-y-2 mr-10">
               <HeaderButton
                 className="ring-1 ring-gray-900/5 shadow-sm hover:bg-gray-50 dark:ring-0 dark:bg-gray-800 dark:hover:bg-gray-700 dark:shadow-highlight/4"
                 naturalWidth={24}
@@ -111,6 +112,10 @@ export function Header({
                   />
                 </g>
               </HeaderButton>
+              <VersionSwitcher
+                value={tailwindVersion}
+                onChange={onChangeTailwindVersion}
+              />
             </div>
           </div>
         </Dialog>
